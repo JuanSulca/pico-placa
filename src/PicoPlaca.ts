@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment, {MomentBuiltinFormat} from 'moment';
 
 interface Environment {
   plate: string,
@@ -43,6 +43,16 @@ export class PicoPlaca {
       5: ['0', '9'],
     };
     return mapping[dayOfWeek].includes(lastDigit);
+  }
+
+  isRestrictedByTime(time: string) {
+    const currentTime = moment(time, 'HH:mm');
+    const morningStart = moment('07:00', 'HH:mm');
+    const morningEnd = moment('09:30', 'HH:mm');
+    const afternoonStart = moment('16:00', 'HH:mm');
+    const afternoonEnd = moment('19:30', 'HH:mm');
+    return currentTime.isBetween(morningStart, morningEnd, undefined, '[]') ||
+      currentTime.isBetween(afternoonStart, afternoonEnd,  undefined, '[]');
   }
 
   canCirculate ({ plate, date, time }: Environment): boolean {

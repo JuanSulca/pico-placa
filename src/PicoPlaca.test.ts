@@ -150,6 +150,49 @@ describe('PicoPlaca', () => {
     });
   });
 
+  describe('isRestrictedByTime', () => {
+    const picoPlaca = new PicoPlaca();
+    test('should return true if time is between 7:00 and 9:30', () => {
+      expect(picoPlaca.isRestrictedByTime('8:56')).toBe(true);
+    });
+
+    test('should return true if time is 7:00', () => {
+      expect(picoPlaca.isRestrictedByTime('7:00')).toBe(true);
+    });
+
+    test('should return true if time is 9:30', () => {
+      expect(picoPlaca.isRestrictedByTime('7:00')).toBe(true);
+    });
+
+    test('should return true if time is between 16:00 and 19:30', () => {
+      expect(picoPlaca.isRestrictedByTime('17:45')).toBe(true);
+    });
+
+    test('should return true if time is 16:00', () => {
+      expect(picoPlaca.isRestrictedByTime('16:00')).toBe(true);
+    });
+
+    test('should return true if time is 19:30', () => {
+      expect(picoPlaca.isRestrictedByTime('19:30')).toBe(true);
+    });
+
+    test('should return false if time is before 7:00 and 9:30', () => {
+      expect(picoPlaca.isRestrictedByTime('6:23')).toBe(false);
+    });
+
+    test('should return false if time is after 7:00 and 9:30', () => {
+      expect(picoPlaca.isRestrictedByTime('13:48')).toBe(false);
+    });
+
+    test('should return false if time is before 16:00 and 19:30', () => {
+      expect(picoPlaca.isRestrictedByTime('15:18')).toBe(false);
+    });
+
+    test('should return false if time is after 16:00 and 19:30', () => {
+      expect(picoPlaca.isRestrictedByTime('19:36')).toBe(false);
+    });
+  });
+
   describe('canCirculate', () => {
     test('should call getPlateLastDigit', () => {
       const env = {
