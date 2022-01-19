@@ -1,10 +1,13 @@
-import moment, {MomentBuiltinFormat} from 'moment';
+import moment from 'moment';
 
 interface Environment {
   plate: string,
   date: string,
   time: string,
 }
+
+const timeFormate = 'HH:mm';
+const inclusivity = '[]';
 
 export class PicoPlaca {
 
@@ -46,19 +49,22 @@ export class PicoPlaca {
   }
 
   isRestrictedByTime(time: string) {
-    const currentTime = moment(time, 'HH:mm');
-    const morningStart = moment('07:00', 'HH:mm');
-    const morningEnd = moment('09:30', 'HH:mm');
-    const afternoonStart = moment('16:00', 'HH:mm');
-    const afternoonEnd = moment('19:30', 'HH:mm');
-    return currentTime.isBetween(morningStart, morningEnd, undefined, '[]') ||
-      currentTime.isBetween(afternoonStart, afternoonEnd,  undefined, '[]');
+    const currentTime = moment(time, timeFormate);
+    const morningStart = moment('07:00', timeFormate);
+    const morningEnd = moment('09:30', timeFormate);
+    const afternoonStart = moment('16:00', timeFormate);
+    const afternoonEnd = moment('19:30', timeFormate);
+    return currentTime.isBetween(morningStart, morningEnd, undefined, inclusivity) ||
+      currentTime.isBetween(afternoonStart, afternoonEnd,  undefined, inclusivity);
   }
 
   canCirculate ({ plate, date, time }: Environment): boolean {
     const lastDigit = this.getPlateLastDigit(plate);
     const dayOfWeek = this.getDayOfTheWeek(date);
-    return !this.isPlateRestricted(lastDigit, dayOfWeek);
+    if (this.isPlateRestricted(lastDigit, dayOfWeek)) {
+      return !this.isRestrictedByTime(time);
+    }
+    return true;
   }
 
 }

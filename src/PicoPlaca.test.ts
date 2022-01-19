@@ -194,13 +194,14 @@ describe('PicoPlaca', () => {
   });
 
   describe('canCirculate', () => {
+    const picoPlaca = new PicoPlaca();
+
     test('should call getPlateLastDigit', () => {
       const env = {
         plate: 'ABC-123',
         date: '2022-01-18',
         time: '18:32',
       };
-      const picoPlaca = new PicoPlaca();
       const getLastDigit = jest.spyOn(picoPlaca, 'getPlateLastDigit');
       expect(picoPlaca.canCirculate(env)).toBe(false);
       expect(getLastDigit).toHaveBeenCalledWith('ABC-123');
@@ -212,8 +213,74 @@ describe('PicoPlaca', () => {
         date: '2022-01-22',
         time: '18:32',
       };
-      const picoPlaca = new PicoPlaca();
       expect(picoPlaca.canCirculate(env)).toBe(true);
+    });
+
+    test('should return true if it is Sunday', () => {
+      const env = {
+        plate: 'ABC-123',
+        date: '2022-01-23',
+        time: '18:32',
+      };
+      expect(picoPlaca.canCirculate(env)).toBe(true);
+    });
+
+    describe('When it is Monday', () => {
+      test('should return true if plate ends with 5', () => {
+        const env = {
+          plate: 'ABC-125',
+          date: '2022-01-17',
+          time: '08:32',
+        };
+        expect(picoPlaca.canCirculate(env)).toBe(true);
+      });
+
+      test('should return false if plate ends with 2', () => {
+        const env = {
+          plate: 'ABC-122',
+          date: '2022-01-17',
+          time: '08:32',
+        };
+        expect(picoPlaca.canCirculate(env)).toBe(false);
+      });
+
+      test('should return true if plate ends with 2 and is not restricted by time', () => {
+        const env = {
+          plate: 'ABC-122',
+          date: '2022-01-17',
+          time: '13:32',
+        };
+        expect(picoPlaca.canCirculate(env)).toBe(true);
+      });
+    });
+
+    describe('When it is Wednesday', () => {
+      test('should return true if plate ends with 1', () => {
+        const env = {
+          plate: 'abc1221',
+          date: '2022-01-19',
+          time: '08:46',
+        };
+        expect(picoPlaca.canCirculate(env)).toBe(true);
+      });
+
+      test('should return true if plate ends with 6 and is not restricted by time', () => {
+        const env = {
+          plate: 'abc1226',
+          date: '2022-01-19',
+          time: '15:46',
+        };
+        expect(picoPlaca.canCirculate(env)).toBe(true);
+      });
+
+      test('should return false if plate ends with 6 and is restricted by time', () => {
+        const env = {
+          plate: 'abc1226',
+          date: '2022-01-19',
+          time: '18:38',
+        };
+        expect(picoPlaca.canCirculate(env)).toBe(false);
+      });
     });
   });
 });
